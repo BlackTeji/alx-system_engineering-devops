@@ -1,34 +1,44 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# Configure my domain zone:
+# www --> 530479-lb-01 54.237.109.64
+# web-01 --> 530479-web-01 3.84.158.146
+# web-02 --> 530479-web-02 54.198.48.145
 
-# Function to retrieve DNS information for a subdomain
-get_dns_info() {
-    domain=$1
-    subdomain=$2
+# -- To be evaluated --
+# domain_information () {
+#     line=$(dig "$2"."$1" | grep -A1 'ANSWER SECTION:' | tr '\t' '\n' | tail -2 | tr '\n' ' ')
+#     echo "$2 $line" | awk '{print "The subdomain " $1 " is a " $2 " record and points to " $3}'
+# }
 
-    if [ -z "$subdomain" ]; then
-        # If no subdomain provided, default to www, lb-01, web-01, and web-02
-        subdomains=("www" "lb-01" "web-01" "web-02")
-    else
-        subdomains=("$subdomain")
-    fi
+# if [ "$#" == 1 ]
+# then
+#   domain_information "$1" "www"
+#   domain_information "$1" "lb-01"
+#   domain_information "$1" "web-01"
+#   domain_information "$1" "web-02"
+# elif [ "$#" == 2 ]
+# then
+#   domain_information "$1" "$2"
+# fi
+#-- To be evaluated --
 
-    for sub in "${subdomains[@]}"; do
-        record_type=$(dig +short -t A "$sub.$domain" | awk '{print $1}')
-        destination=$(dig +short "$sub.$domain" | awk 'NR==1{print $1}')
-        echo "The subdomain $sub is a $record_type record and points to $destination"
-    done
+subdomains_all=( "www" "lb-01" "web-01" "web-02" )
+
+runDig () {
+    subdomain=$1
+    domain=$2
+
+    dig "$subdomain.$domain" | grep -A1 'ANSWER SECTION:' | tail -1 | awk -v s="$subdomain" 'BEGIN { FS = " " } ; { print "The subdomain " s " is a " $4 " record and points to " $5 }'
 }
 
-# Check if domain and subdomain arguments are provided
-if [ $# -lt 1 ]; then
-    echo "Usage: $0 <domain> [<subdomain>]"
-    exit 1
+if [ $# -eq 1 ]; then
+    domain="$1"
+    for i in "${subdomains_all[@]}"
+    do
+	runDig "$i" "$domain"
+    done
+elif [ $# -eq 2 ]; then
+    domain="$1"
+    subdomain="$2"
+    runDig "$subdomain" "$domain"
 fi
-
-# Parse command line arguments
-domain=$1
-subdomain=$2
-
-# Call function to retrieve DNS information
-get_dns_info "$domain" "$subdomain"
-
