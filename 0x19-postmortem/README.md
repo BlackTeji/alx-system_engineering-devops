@@ -1,16 +1,14 @@
 ---
 
-# **🚨 Postmortem: Bank Fee Transparency Tool Outage**  
+postmortem:
+  title: "Bank Fee Transparency Tool Outage"
+  issue_summary:
+    duration: "February 25, 2025, 14:10 - 16:45 WAT (2 hours, 35 minutes)"
+    impact:
+      - "100% downtime – Users could not access the platform."
+      - "Users encountered 500 Internal Server Error on all pages."
+    root_cause: "Misconfigured PostgreSQL connection pool exhausted available connections, causing backend failure."
 
-## **🛑 Issue Summary**  
-- **📅 Duration:** February 25, 2025, 14:10 - 16:45 WAT (2 hours, 35 minutes)  
-- **💥 Impact:**  
-  - **100% downtime** – Users could not access the platform.  
-  - **Users encountered** `500 Internal Server Error` on all pages.  
-- **🔍 Root Cause:**  
-  - Misconfigured PostgreSQL connection pool exhausted available connections, causing backend failure.  
-
----
 
 ## **📜 Timeline**  
 
